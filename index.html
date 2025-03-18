@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Cobrinha</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            margin: 0;
+        }
+        canvas {
+            background-color: #222;
+            border: 3px solid white;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const tamanho = 20;
+        let cobra = [{ x: 200, y: 200 }];
+        let direcao = { x: 0, y: 0 };
+        let comida = gerarComida();
+        let jogoRodando = true;
+
+        function desenharCobra() {
+            ctx.fillStyle = "lime";
+            cobra.forEach(segmento => {
+                ctx.fillRect(segmento.x, segmento.y, tamanho, tamanho);
+            });
+        }
+
+        function moverCobra() {
+            if (!jogoRodando) return;
+
+            const cabeca = { 
+                x: cobra[0].x + direcao.x * tamanho, 
+                y: cobra[0].y + direcao.y * tamanho 
+            };
+
+            // Verifica colisão com parede
+            if (cabeca.x < 0 || cabeca.x >= canvas.width || cabeca.y < 0 || cabeca.y >= canvas.height) {
+                fimDeJogo();
+                return;
+            }
+
+            // Verifica colisão com o próprio corpo
+            if (cobra.some((segmento, index) => index !== 0 && segmento.x === cabeca.x && segmento.y === cabeca.y)) {
+                fimDeJogo();
+                return;
+            }
+
+            cobra.unshift(cabeca);
+
+            // Verifica se comeu a comida
+            if (cabeca.x === comida.x && cabeca.y === comida.y) {
+                comida = gerarComida();
+            } else {
+                cobra.pop();
+            }
+        }
+
+        function gerarComida() {
+            let posicao;
+            do {
+                posicao = {
+                    x: Math.floor(Math.random() * (canvas.width / tamanho)) * tamanho,
+                    y: Math.floor(Math.random() * (canvas.height / tamanho)) * tamanho
+                };
+            } while (cobra.some(segmento => segmento.x === posicao.x && segmento.y === posicao.y));
+            return posicao;
+        }
+
+        function desenharComida() {
+            ctx.fillStyle = "red";
+            ctx.fillRect(comida.x, comida.y, tamanho, tamanho);
+        }
+
+        function fimDeJogo() {
+            jogoRodando = false;
+            alert("Game Over! Atualize a página para jogar novamente.");
+        }
+
+        function atualizarJogo() {
+            if (!jogoRodando) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            moverCobra();
+            desenharComida();
+            desenharCobra();
+        }
+
+        function mudarDirecao(event) {
+            const tecla = event.key;
+
+            if ((tecla === "ArrowUp" || tecla === "w") && direcao.y === 0) direcao = { x: 0, y: -1 };
+            else if ((tecla === "ArrowDown" || tecla === "s") && direcao.y === 0) direcao = { x: 0, y: 1 };
+            else if ((tecla === "ArrowLeft" || tecla === "a") && direcao.x === 0) direcao = { x: -1, y: 0 };
+            else if ((tecla === "ArrowRight" || tecla === "d") && direcao.x === 0) direcao = { x: 1, y: 0 };
+        }
+
+        document.addEventListener("keydown", mudarDirecao);
+        setInterval(atualizarJogo, 100);
+    </script>
+</body>
+</html>
