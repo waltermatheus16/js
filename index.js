@@ -57,7 +57,6 @@ console.log(ehPalindromo("xpto"));
 
 const readline = require("readline");
 
-// Criar interface para entrada do usuário
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -65,23 +64,19 @@ const rl = readline.createInterface({
 
 const opcoes = ["pedra", "papel", "tesoura"];
 
-// Perguntar ao usuário
-rl.question("Exercício 4 - Escolha pedra, papel ou tesoura: ", (entradaUsuario) => {
+rl.question("Escolha pedra, papel ou tesoura: ", (entradaUsuario) => {
     entradaUsuario = entradaUsuario.toLowerCase();
 
-    // Validar entrada
     if (!opcoes.includes(entradaUsuario)) {
         console.log("Escolha inválida! Tente novamente.");
         rl.close();
         return;
     }
 
-    // Escolha aleatória do computador
     const escolhaComputador = opcoes[Math.floor(Math.random() * opcoes.length)];
     
     console.log(`Computador escolheu: ${escolhaComputador}`);
 
-    // Verificar vencedor
     if (entradaUsuario === escolhaComputador) {
         console.log("Empate!");
     } else if (
@@ -94,6 +89,7 @@ rl.question("Exercício 4 - Escolha pedra, papel ou tesoura: ", (entradaUsuario)
         console.log("Você perdeu!");
     }
 
-    rl.close(); // Fechar a entrada
+    rl.close();
 });
+
 
